@@ -1,6 +1,7 @@
 import { Todo } from "./class";
 import { TodoList } from "./class";
 
+//Läser in värden från formen
 const todoText = document.getElementById("todoText") as HTMLTextAreaElement;
 const chosenPrio = document.getElementById("priority") as HTMLSelectElement;
 const todoForm = document.getElementById("todoForm")! as HTMLFormElement;
@@ -12,18 +13,16 @@ const TodoListInit = new TodoList(todoTextEl, completedEl, chosenPrioEl);
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    TodoListInit.loadFromLocalStorage();
-    const todoArr = TodoListInit.getTodos();
-    printTodos(todoArr);
+    TodoListInit.loadFromLocalStorage(); //Tar fram todos från localstorage
+    const todoArr = TodoListInit.getTodos(); //Hämtar todos
+    printTodos(todoArr); //Skriver ut todos till DOM
 
     todoForm.addEventListener('submit', (event) => {
         
         const todoTextEl = todoText.value;
         const chosenPrioEl = parseInt(chosenPrio.value) as 1 | 2 | 3;
         const completedEl = false;
-        
-        
-        /* console.log(todoTextEl, completedEl, chosenPrioEl); */
+       
         const addTodoStatus = TodoListInit.addTodo(todoTextEl, chosenPrioEl);
         if(addTodoStatus == false){
             event.preventDefault(); 
@@ -36,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+//Funktion som skriver ut sparade todos till DOM
 function printTodos(arr: Todo[]){
     const todoDiv = document.getElementById("todoDiv") as HTMLDivElement;
     const done = document.getElementById("done") as HTMLDivElement;
@@ -73,11 +73,11 @@ function printTodos(arr: Todo[]){
         todoItem.appendChild(label);
         todoItem.appendChild(todoPrio);
         todoItem.appendChild(todoTask);
+        //Skickar todo till passande Div beroende på avklarat/Ej avklarat
         if(checkbox.checked == false){
             todoDiv.appendChild(todoItem);
         }else if(checkbox.checked == true){
             done.appendChild(todoItem);
         }
-        
     });
 }
