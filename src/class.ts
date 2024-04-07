@@ -4,7 +4,7 @@ export interface Todo {
     priority: 1 | 2 | 3;
 }
 
-export class TodoList implements Todo{
+ export class TodoList implements Todo{
 
     task: string;
     completed: boolean;
@@ -18,31 +18,42 @@ export class TodoList implements Todo{
 
     todos: Todo[] = [];
     
-    addTodo(todo: Todo): void{
-        this.todos.push(todo);
-        this.saveToLocalStorage(this.todos);
+    public addTodo(task: string, priority: number): boolean{
+        if(task != "" && priority != null){
+            return true
+        }else{
+            return false
+        }
     }
 
+    /* this.todos.push(todo);
+        this.saveToLocalStorage(this.todos); */
+
     markTodoCompleted(todoIndex: number): void{
-        //(metod för att markera todos som klara)
+        const todoToUpdate = this.todos[todoIndex];
+        todoToUpdate.completed = true;
+        this.todos.splice(todoIndex, 1, todoToUpdate);
+        localStorage.setItem('todos', JSON.stringify(this.todos));
+    }
+
+    deleteTodo(todoIndex: number): void{
+        this.todos.splice(todoIndex, 1);
+        localStorage.setItem('todos', JSON.stringify(this.todos));
+    }
+
+    loadFromLocalStorage(): void {
+        let savedTodos = localStorage.getItem('todos');
+        if (savedTodos) {
+            return this.todos = JSON.parse(savedTodos);
+        } 
     }
 
     getTodos(): Todo[] {
         return this.todos;
     }
 
-    saveToLocalStorage(todos: Todo[]): void {
-        localStorage.setItem('todos', JSON.stringify(todos));
+    saveToLocalStorage(todo: Todo): void {
+        this.todos.push(todo);
+        localStorage.setItem('todos', JSON.stringify(this.todos));
     }
-    
-    loadFromLocalStorage(): void {
-        const savedTodos = localStorage.getItem('todos');
-        if (savedTodos) {
-            return JSON.parse(savedTodos);
-        } /* else {
-            return []; 
-        } */
-    }
-    
 }
-

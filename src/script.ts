@@ -1,71 +1,14 @@
- interface Todo {
-    task: string;
-    completed: boolean;
-    priority: 1 | 2 | 3;
-}
+import { Todo } from "./class";
+import { TodoList } from "./class";
 
- class TodoList implements Todo{
-
-    task: string;
-    completed: boolean;
-    priority: 1 | 2 | 3;
-
-    constructor(task: string, completed: boolean, priority: 1 | 2 | 3){
-        this.task = task;
-        this.completed = completed;
-        this.priority = priority;
-    }
-
-    todos: Todo[] = [];
-    
-    public addTodo(task: string, priority: number): boolean{
-        if(task != "" && priority != null){
-            return true
-        }else{
-            return false
-        }
-    }
-
-    /* this.todos.push(todo);
-        this.saveToLocalStorage(this.todos); */
-
-    markTodoCompleted(todoIndex: number): void{
-        const todoToUpdate = this.todos[todoIndex];
-        todoToUpdate.completed = true;
-        this.todos.splice(todoIndex, 1, todoToUpdate);
-        localStorage.setItem('todos', JSON.stringify(this.todos));
-    }
-
-    deleteTodo(todoIndex: number): void{
-        this.todos.splice(todoIndex, 1);
-        localStorage.setItem('todos', JSON.stringify(this.todos));
-    }
-
-    loadFromLocalStorage(): void {
-        let savedTodos = localStorage.getItem('todos');
-        if (savedTodos) {
-            return this.todos = JSON.parse(savedTodos);
-        } 
-    }
-
-    getTodos(): Todo[] {
-        return this.todos;
-    }
-
-    saveToLocalStorage(todo: Todo): void {
-        this.todos.push(todo);
-        localStorage.setItem('todos', JSON.stringify(this.todos));
-    }
-}
-
-    const todoText = document.getElementById("todoText") as HTMLTextAreaElement;
-    const chosenPrio = document.getElementById("priority") as HTMLSelectElement;
-    const todoForm = document.getElementById("todoForm")! as HTMLFormElement;
-    const todoTextEl = todoText.value;
-    const chosenPrioEl = parseInt(chosenPrio.value) as 1 | 2 | 3;
-    const completedEl = false;
-    //instantiate klassen
-    const TodoListInit = new TodoList(todoTextEl, completedEl, chosenPrioEl);
+const todoText = document.getElementById("todoText") as HTMLTextAreaElement;
+const chosenPrio = document.getElementById("priority") as HTMLSelectElement;
+const todoForm = document.getElementById("todoForm")! as HTMLFormElement;
+const todoTextEl = todoText.value;
+const chosenPrioEl = parseInt(chosenPrio.value) as 1 | 2 | 3;
+const completedEl = false;
+//instantiate klassen
+const TodoListInit = new TodoList(todoTextEl, completedEl, chosenPrioEl);
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -99,13 +42,18 @@ function printTodos(arr: Todo[]){
     
     arr.forEach((element, index) => {
         const todoItem: HTMLDivElement = document.createElement('div');
+        todoItem.classList.add('itemTodo');
         const todoTask: HTMLParagraphElement = document.createElement('p');
+        todoTask.classList.add('taskTodo');
         const todoPrio: HTMLParagraphElement = document.createElement('p');
+        todoPrio.classList.add('prio');
         todoTask.textContent = element.task;
-        todoPrio.textContent = element.priority.toString();
+        todoPrio.textContent = "(Prio: " + element.priority.toString() + ")";
         const label = document.createElement("label");
+        label.classList.add('checkLabel');
         label.textContent = "Klart: "
         const checkbox: HTMLInputElement = document.createElement('input');
+        checkbox.classList.add('checkInput');
         checkbox.type = 'checkbox';
         checkbox.addEventListener("change", ()=>{
             TodoListInit.markTodoCompleted(index);
@@ -114,6 +62,7 @@ function printTodos(arr: Todo[]){
         checkbox.checked = element.completed;
         checkbox.disabled = element.completed;
         const deleteTodo: HTMLSpanElement = document.createElement('span');
+        deleteTodo.classList.add('cansel');
         deleteTodo.textContent= "X";
         deleteTodo.addEventListener("click", ()=>{
             TodoListInit.deleteTodo(index);

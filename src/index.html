@@ -9,7 +9,8 @@
     <script type="module" src="script.ts"></script>
 </head>
 <body>
-    <div class="contact-form">
+    <div class="todoContainer">
+        <h1>ToDo-List:</h1>
         <form id="todoForm">
             <textarea name="todoText" id="todoText"></textarea>
             <label for="priority">Prioritet:</label> 
@@ -18,14 +19,12 @@
             <option value="2">2</option> 
             <option value="3">3</option> 
             </select>
-            <button type="submit">Save todo</button>
+            <button type="submit">Spara todo</button>
         </form>
         <p id="error"></p>
-        <div id="todoDiv"></div>
-        <div id="done"></div>
+        <div id="todoDiv"><h2>Uppgifter att göra:</h2></div>
+        <div id="done"><h2>Avklarade uppgifter:</h2></div>
     </div>
-    <ul id="contact-list">
-
-    </ul>
+    
 </body>
 </html>
