@@ -11,19 +11,18 @@
 <body>
     <div class="contact-form">
         <form id="todoForm">
-            <textarea name="todoText" id="todoText">Todo:</textarea>
+            <textarea name="todoText" id="todoText"></textarea>
             <label for="priority">Prioritet:</label> 
             <select name="priority" id="priority"> 
             <option value="1">1</option> 
             <option value="2">2</option> 
             <option value="3">3</option> 
-    </select>
+            </select>
             <button type="submit">Save todo</button>
         </form>
-
-        <div id="printedTodos">
-            
-        </div>
+        <p id="error"></p>
+        <div id="todoDiv"></div>
+        <div id="done"></div>
     </div>
     <ul id="contact-list">
 

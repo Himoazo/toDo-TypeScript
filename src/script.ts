@@ -36,6 +36,11 @@
         localStorage.setItem('todos', JSON.stringify(this.todos));
     }
 
+    deleteTodo(todoIndex: number): void{
+        this.todos.splice(todoIndex, 1);
+        localStorage.setItem('todos', JSON.stringify(this.todos));
+    }
+
     loadFromLocalStorage(): void {
         let savedTodos = localStorage.getItem('todos');
         if (savedTodos) {
@@ -65,12 +70,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     
     TodoListInit.loadFromLocalStorage();
-    console.log(TodoListInit.loadFromLocalStorage());
     const todoArr = TodoListInit.getTodos();
     printTodos(todoArr);
 
     todoForm.addEventListener('submit', (event) => {
-        /* event.preventDefault();  */
+        
         const todoTextEl = todoText.value;
         const chosenPrioEl = parseInt(chosenPrio.value) as 1 | 2 | 3;
         const completedEl = false;
@@ -78,32 +82,53 @@ document.addEventListener('DOMContentLoaded', () => {
         
         /* console.log(todoTextEl, completedEl, chosenPrioEl); */
         const addTodoStatus = TodoListInit.addTodo(todoTextEl, chosenPrioEl);
-        if(addTodoStatus == true){
+        if(addTodoStatus == false){
+            event.preventDefault(); 
+            const error = document.getElementById("error") as HTMLParagraphElement;
+            error.textContent = "Vänligen fyll i både text och prioritet";
+        }else{
             const newTodo: Todo = { task: todoTextEl, completed: completedEl, priority: chosenPrioEl};
-            /* console.log(newTodo); */
             TodoListInit.saveToLocalStorage(newTodo);
         }
     });
 });
 
 function printTodos(arr: Todo[]){
-    const todoDiv = document.getElementById("printedTodos") as HTMLDivElement;
+    const todoDiv = document.getElementById("todoDiv") as HTMLDivElement;
+    const done = document.getElementById("done") as HTMLDivElement;
     
     arr.forEach((element, index) => {
         const todoItem: HTMLDivElement = document.createElement('div');
         const todoTask: HTMLParagraphElement = document.createElement('p');
         const todoPrio: HTMLParagraphElement = document.createElement('p');
-        todoTask.textContent = element.task + " " + element.completed;
+        todoTask.textContent = element.task;
         todoPrio.textContent = element.priority.toString();
+        const label = document.createElement("label");
+        label.textContent = "Klart: "
         const checkbox: HTMLInputElement = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.addEventListener("change", ()=>{
             TodoListInit.markTodoCompleted(index);
+            document.location.reload();
         });
         checkbox.checked = element.completed;
-        todoItem.appendChild(checkbox);
+        checkbox.disabled = element.completed;
+        const deleteTodo: HTMLSpanElement = document.createElement('span');
+        deleteTodo.textContent= "X";
+        deleteTodo.addEventListener("click", ()=>{
+            TodoListInit.deleteTodo(index);
+            document.location.reload();
+        });
+        todoItem.appendChild(deleteTodo);
+        label.appendChild(checkbox);
+        todoItem.appendChild(label);
         todoItem.appendChild(todoPrio);
         todoItem.appendChild(todoTask);
-        todoDiv.appendChild(todoItem);
+        if(checkbox.checked == false){
+            todoDiv.appendChild(todoItem);
+        }else if(checkbox.checked == true){
+            done.appendChild(todoItem);
+        }
+        
     });
 }
