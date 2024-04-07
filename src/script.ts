@@ -10,7 +10,7 @@
     completed: boolean;
     priority: 1 | 2 | 3;
 
-    constructor(task: string, completed: false, priority: 1 | 2 | 3){
+    constructor(task: string, completed: boolean, priority: 1 | 2 | 3){
         this.task = task;
         this.completed = completed;
         this.priority = priority;
@@ -30,38 +30,80 @@
         this.saveToLocalStorage(this.todos); */
 
     markTodoCompleted(todoIndex: number): void{
-        //(metod för att markera todos som klara)
+        const todoToUpdate = this.todos[todoIndex];
+        todoToUpdate.completed = true;
+        this.todos.splice(todoIndex, 1, todoToUpdate);
+        localStorage.setItem('todos', JSON.stringify(this.todos));
+    }
+
+    loadFromLocalStorage(): void {
+        let savedTodos = localStorage.getItem('todos');
+        if (savedTodos) {
+            return this.todos = JSON.parse(savedTodos);
+        } 
     }
 
     getTodos(): Todo[] {
         return this.todos;
     }
 
-    saveToLocalStorage(todo: TodoList): void {
+    saveToLocalStorage(todo: Todo): void {
         this.todos.push(todo);
         localStorage.setItem('todos', JSON.stringify(this.todos));
     }
-    
-    loadFromLocalStorage(): void {
-        let savedTodos = localStorage.getItem('todos');
-        if (savedTodos) {
-            return JSON.parse(savedTodos);
-        } 
-    }
 }
 
-const todoText = document.getElementById("todoText") as HTMLTextAreaElement;
-const chosenPrio = document.getElementById("priority") as HTMLSelectElement;
-
-const todoTextEl = todoText.value;
-const chosenPrioEl = parseInt(chosenPrio.value) as 1 | 2 | 3;
-
-
-const TodoListInit = new TodoList(todoTextEl, false, chosenPrioEl);
-document.addEventListener('DOMContentLoaded', () => {
+    const todoText = document.getElementById("todoText") as HTMLTextAreaElement;
+    const chosenPrio = document.getElementById("priority") as HTMLSelectElement;
     const todoForm = document.getElementById("todoForm")! as HTMLFormElement;
+    const todoTextEl = todoText.value;
+    const chosenPrioEl = parseInt(chosenPrio.value) as 1 | 2 | 3;
+    const completedEl = false;
+    //instantiate klassen
+    const TodoListInit = new TodoList(todoTextEl, completedEl, chosenPrioEl);
+
+document.addEventListener('DOMContentLoaded', () => {
+    
+    TodoListInit.loadFromLocalStorage();
+    console.log(TodoListInit.loadFromLocalStorage());
+    const todoArr = TodoListInit.getTodos();
+    printTodos(todoArr);
+
     todoForm.addEventListener('submit', (event) => {
-        event.preventDefault(); 
-        TodoListInit.addTodo(todoTextEl, chosenPrioEl);
+        /* event.preventDefault();  */
+        const todoTextEl = todoText.value;
+        const chosenPrioEl = parseInt(chosenPrio.value) as 1 | 2 | 3;
+        const completedEl = false;
+        
+        
+        /* console.log(todoTextEl, completedEl, chosenPrioEl); */
+        const addTodoStatus = TodoListInit.addTodo(todoTextEl, chosenPrioEl);
+        if(addTodoStatus == true){
+            const newTodo: Todo = { task: todoTextEl, completed: completedEl, priority: chosenPrioEl};
+            /* console.log(newTodo); */
+            TodoListInit.saveToLocalStorage(newTodo);
+        }
     });
 });
+
+function printTodos(arr: Todo[]){
+    const todoDiv = document.getElementById("printedTodos") as HTMLDivElement;
+    
+    arr.forEach((element, index) => {
+        const todoItem: HTMLDivElement = document.createElement('div');
+        const todoTask: HTMLParagraphElement = document.createElement('p');
+        const todoPrio: HTMLParagraphElement = document.createElement('p');
+        todoTask.textContent = element.task + " " + element.completed;
+        todoPrio.textContent = element.priority.toString();
+        const checkbox: HTMLInputElement = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.addEventListener("change", ()=>{
+            TodoListInit.markTodoCompleted(index);
+        });
+        checkbox.checked = element.completed;
+        todoItem.appendChild(checkbox);
+        todoItem.appendChild(todoPrio);
+        todoItem.appendChild(todoTask);
+        todoDiv.appendChild(todoItem);
+    });
+}
